@@ -1,13 +1,14 @@
-import mysql.connector
+import mysql.connector #ida mamchatch diro (pip install mysql-connector-python)
 from datetime import datetime
 import hashlib
+import pwinput 
 
 # Connexion à la base de données
 def connect_to_db():
     return mysql.connector.connect(
         host="localhost",
         user="root",  
-        password="pswd",  
+        password="pswd",  #diro password ta3kom hna
         database="qcm_test"  
     )
 
@@ -25,19 +26,20 @@ def validate_password(password):
         return "Le mot de passe doit contenir au moins un chiffre."
     if not any(char in "!@#$%^&*()-_=+[]{}|;:',.<>?/`~" for char in password):
         return "Le mot de passe doit contenir au moins un caractère spécial."
-    return None  # Pas d'erreur
+    return None  
 
 # Fonction pour valider le nom d'utilisateur
 def validate_username(username):
     if len(username) < 4:
         return "Le nom d'utilisateur doit contenir au moins 4 caractères."
-    return None  # Pas d'erreur
+    return None  
 
 
 
 def login():
     username = input("Entrez votre nom d'utilisateur: ")
-    password = input("Entrez votre mot de passe: ")
+    password = pwinput.pwinput("Entrez votre mot de passe: ")  # Affiche des astérisques
+
     conn = connect_to_db()
     cursor = conn.cursor()
     query = "SELECT password FROM users WHERE username = %s"
@@ -59,8 +61,7 @@ def signup():
         if error:
             print(error)
             continue
-
-        password = input("Entrez un mot de passe: ")
+        password = pwinput.pwinput("Entrez votre mot de passe: ")  # Affiche des astérisques
         error = validate_password(password)
         if error:
             print(error)
@@ -75,8 +76,8 @@ def signup():
         hashed_password = hash_password(password)
         query = """
             INSERT INTO users (username, password, name, email, role) 
-            VALUES (%s, %s, %s, %s, 'user')
-        """
+            VALUES (%s, %s, %s, %s, 'user') 
+        """   #role par default user
         try:
             cursor.execute(query, (username, hashed_password, name, email))
             conn.commit()
