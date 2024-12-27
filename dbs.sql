@@ -232,9 +232,10 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `role` enum('prof','user') NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `password` varchar(255) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,6 +244,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'meee','SIRINE','SIRINE@gmail.com','user','2024-12-26 21:25:43','81c7c5d19e05415a094b4db1249786f5a0c462c3090e4136a9373799be33d90d'),(2,'noor','noor','noor@gmail.com','user','2024-12-26 21:41:59','daa2e3e9616b329516f34f93af0a61ae55224ceac298344f3dc7ed18fc1e7e65'),(3,'lina','lina','lina@gmail.com','user','2024-12-26 21:44:54','871999b4f27b0408b98327fca0268582d40027afdd4237443a51842be92bfb61');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -255,4 +257,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-26  1:54:57
+-- Dump completed on 2024-12-26 22:36:25
