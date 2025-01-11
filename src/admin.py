@@ -32,6 +32,34 @@ def ajouter_question(questions, numero_question):
     questions[question] = reponses
     print("Question ajoutée avec succès !")
 
+    def repondre_questions(questions):
+    """
+    Permet à l'utilisateur de répondre aux questions du QCM.
+    """
+    reponses_utilisateur = []
+    print("\nBienvenue dans la session de réponses au QCM. Répondez aux questions ci-dessous :\n")
+    
+    for idx_q, (question, reponses) in enumerate(questions.items(), 1):
+        print(f"Question {idx_q}: {question}")
+        for idx_r, (reponse, _) in enumerate(reponses, 1):
+            print(f"  {idx_r}) {reponse}")
+        
+        while True:
+            try:
+                choix = int(input("Entrez le numéro de votre réponse : ").strip())
+                 # On utilise le block try catch en cas ou l'utilisteur insert une reponse de type invalide a choix = ... , eg: choix = "abc" 
+                if 1 <= choix <= len(reponses):
+                    reponses_utilisateur.append(choix)
+                    eval(questions, reponses_utilisateur)
+                    break
+                else:
+                    print("Choix invalide. Veuillez sélectionner une option valide.")
+            except ValueError:
+                print("Entrée invalide. Veuillez entrer un numéro.")
+    
+    print("\nMerci d'avoir répondu au QCM.")
+    return reponses_utilisateur
+
 
 def Modifier_Qcm(nom, questions):
     """
