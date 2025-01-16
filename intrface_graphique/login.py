@@ -42,69 +42,96 @@ def login():
     else:
         messagebox.showwarning("Error", "Please fill in all fields.")
 
-def create_placeholder_label(parent, text, x, y):
-    return tk.Label(parent, text=text, bg="white", fg="#666666", font=("Helvetica", 10), anchor="w")
+def create_menu_button(parent, text, y_position, command=None):
+    button = tk.Button(parent, text=text,
+                      bg="#1a1a1a",
+                      fg="white",
+                      font=("Helvetica", 10),
+                      bd=0,
+                      relief="flat",
+                      activebackground="#2a2a2a",
+                      activeforeground="white",
+                      cursor="hand2",
+                      width=20,
+                      command=command)
+    button.place(x=0, y=y_position, width=150)
+    return button
 
-def handle_focus_in(event, label):
-    label.config(fg="#007BFF")  # Change label color when field is focused
+def show_login_frame():
+    login_frame.tkraise()
 
-def handle_focus_out(event, label, entry):
-    label.config(fg="#666666" if not entry.get() else "#007BFF")
+def show_signup_frame():
+    # À implémenter plus tard
+    pass
 
-# Main window setup
+def show_accueil_frame():
+    # À implémenter plus tard
+    pass
+
+# Configuration de la fenêtre principale
 root = tk.Tk()
 root.title("Login Interface")
-root.geometry("600x400")
+root.geometry("800x500")
 
-# Background setup
-background_image = Image.open("BG.jpg")
-background_image = background_image.resize((600, 400), Image.Resampling.LANCZOS)
-background_photo = ImageTk.PhotoImage(background_image)
-
-canvas = tk.Canvas(root, width=600, height=400)
-canvas.pack(fill="both", expand=True)
-canvas.create_image(0, 0, image=background_photo, anchor="nw")
-
-# Style configuration
-bg_color = "#1E1E1E"
+# Style global
+bg_color = "#0a0a0a"
 fg_color = "#FFFFFF"
-border_color = "#5A5A5A"
+accent_color = "#1a1a1a"
 font = ("Helvetica", 12)
 
-# Main frame
-frame = tk.Frame(canvas, bg="white", bd=0)
-frame.place(relx=0.5, rely=0.5, anchor="center", width=400, height=300)
+# Fond principal
+root.configure(bg=bg_color)
 
-# Email field with floating label
-email_label = create_placeholder_label(frame, "Email", 50, 60)
-email_label.place(x=50, y=60)
+# Création du menu latéral
+menu_frame = tk.Frame(root, bg=accent_color, width=150, height=500)
+menu_frame.pack(side="left", fill="y")
+menu_frame.pack_propagate(False)
 
-email_entry = tk.Entry(frame, bg="white", fg="black", font=font, insertbackground=fg_color, bd=0)
-email_entry.place(x=50, y=80, width=300, height=25)
-email_entry.config(highlightbackground=border_color, highlightcolor=fg_color, highlightthickness=1)
+# Titre du menu
+menu_title = tk.Label(menu_frame, text="LOG-IN", bg=accent_color, fg="white", font=("Helvetica", 14, "bold"))
+menu_title.pack(pady=20)
 
-# Bind focus events for email
-email_entry.bind("<FocusIn>", lambda e: handle_focus_in(e, email_label))
-email_entry.bind("<FocusOut>", lambda e: handle_focus_out(e, email_label, email_entry))
+# Boutons du menu
+create_menu_button(menu_frame, "ACCUEIL", 100, show_accueil_frame)
+create_menu_button(menu_frame, "LOGIN", 150, show_login_frame)
+create_menu_button(menu_frame, "SIGN-UP", 200, show_signup_frame)
 
-# Password field with floating label
-password_label = create_placeholder_label(frame, "Password", 50, 130)
-password_label.place(x=50, y=130)
+# Frame principal pour le contenu
+content_frame = tk.Frame(root, bg=bg_color)
+content_frame.pack(side="left", fill="both", expand=True)
 
-password_entry = tk.Entry(frame, bg="white", fg="black", font=font, show="*", insertbackground=fg_color, bd=0)
-password_entry.place(x=50, y=150, width=300, height=25)
-password_entry.config(highlightbackground=border_color, highlightcolor=fg_color, highlightthickness=1)
+# Frame de login
+login_frame = tk.Frame(content_frame, bg=bg_color)
+login_frame.pack(fill="both", expand=True)
 
-# Bind focus events for password
-password_entry.bind("<FocusIn>", lambda e: handle_focus_in(e, password_label))
-password_entry.bind("<FocusOut>", lambda e: handle_focus_out(e, password_label, password_entry))
+# Conteneur pour centrer le formulaire
+form_container = tk.Frame(login_frame, bg=bg_color, padx=50, pady=50)
+form_container.place(relx=0.5, rely=0.5, anchor="center")
 
-# Login button
-login_button = tk.Button(frame, text="Login", bg=border_color, fg=fg_color, font=font, relief="flat", command=login)
-login_button.place(x=50, y=200, width=300, height=35)
+# Cadre autour du formulaire (avec une largeur spécifique)
+form_frame = tk.Frame(form_container, bg="#1a1a1a", bd=2, relief="solid", padx=20, pady=20,width=500)
+form_frame.pack(fill="x", padx=10, pady=10)  # fill="x" pour s'adapter à la largeur du conteneur
 
-# Forgot password link
-forgot_password = tk.Label(frame, text="Forgot password?", bg="white", fg="#007BFF", font=("Helvetica", 10), cursor="hand2")
-forgot_password.place(x=50, y=250)
+# Labels et champs de saisie
+tk.Label(form_frame, text="Email", bg="#1a1a1a", fg=fg_color, font=font).pack(anchor="w")
+email_entry = tk.Entry(form_frame, bg="#333333", fg=fg_color, font=font, insertbackground=fg_color ,width=30)
+email_entry.pack(fill="x", pady=(5, 20), ipadx=10, ipady=5)  # ipadx et ipady pour un padding interne
+email_entry.configure(highlightthickness=1, highlightbackground="#555555")
 
+tk.Label(form_frame, text="Password", bg="#1a1a1a", fg=fg_color, font=font).pack(anchor="w")
+password_entry = tk.Entry(form_frame, bg="#333333", fg=fg_color, font=font, show="*", insertbackground=fg_color,width=30)
+password_entry.pack(fill="x", pady=(5, 20), ipadx=10, ipady=5)  # ipadx et ipady pour un padding interne
+password_entry.configure(highlightthickness=1, highlightbackground="#555555")
+
+# Bouton de connexion
+login_button = tk.Button(form_frame, text="Login", bg="#333333", fg=fg_color, font=font,
+                        relief="flat", command=login, cursor="hand2")
+login_button.pack(fill="x", pady=(10, 20), ipadx=10, ipady=5)  # ipadx et ipady pour un padding interne
+
+# Lien "Forgot password?"
+forgot_password = tk.Label(form_frame, text="Forgot password?", bg="#1a1a1a", fg="#4a9eff",
+                         font=("Helvetica", 10), cursor="hand2")
+forgot_password.pack()
+
+# Lancer l'application
 root.mainloop()
