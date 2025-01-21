@@ -1,77 +1,43 @@
+from src.db import connect_to_db
+
 def ajouter_question(questions, numero_question):
-    """
-    Ajoute une nouvelle question avec ses réponses.
-    """
     question = input(f"Q{numero_question}: ")
     reponses = []
     print(f"Appuyez sur '!' pour terminer l'ajout des réponses pour Q{numero_question}.")
-    corr=False #en moins une correct
-    faux=False #en moins une fausse
+    corr = False  # en moins une correct
+    faux = False  # en moins une fausse
     while True:
         reponse = input(f"Réponse {len(reponses) + 1}: ")
         if reponse == '!':
-            if len(reponses) >= 2 and corr==True and faux==True:  # Au moins 2 réponses nécessaires et en moins 1 correct et une fauss
+            if len(reponses) >= 2 and corr and faux:
                 break
             else:
                 print("La question doit avoir au moins 2 réponses. une correct et une fausse")
         else:
             while True:
                 etat = input("Est-ce une bonne réponse ? (oui/non) : ").strip().lower()
-                if etat=='oui':
-                    etat = True  # Convertit en booléen
-                    corr=True
+                if etat == 'oui':
+                    etat = True
+                    corr = True
                     break
-                elif etat=='non':
-                    etat = False  # Convertit en booléen
-                    faux=True
+                elif etat == 'non':
+                    etat = False
+                    faux = True
                     break
                 else:
                     print("Veuillez entrer 'oui' ou 'non'.")
             reponses.append((reponse, etat))
-    
+
     questions[question] = reponses
     print("Question ajoutée avec succès !")
 
-    
-    #"""
-    #Permet à l'utilisateur de répondre aux questions du QCM.
-    #"""
-    #def repondre_questions(questions):
-    reponses_utilisateur = []
-    print("\nBienvenue dans la session de réponses au QCM. Répondez aux questions ci-dessous :\n")
-    
-    for idx_q, (question, reponses) in enumerate(questions.items(), 1):
-        print(f"Question {idx_q}: {question}")
-        for idx_r, (reponse, _) in enumerate(reponses, 1):
-            print(f"  {idx_r}) {reponse}")
-        
-        while True:
-            try:
-                choix = int(input("Entrez le numéro de votre réponse : ").strip())
-                 # On utilise le block try catch en cas ou l'utilisteur insert une reponse de type invalide a choix = ... , eg: choix = "abc" 
-                if 1 <= choix <= len(reponses):
-                    reponses_utilisateur.append(choix)
-                    eval(questions, reponses_utilisateur)
-                    break
-                else:
-                    print("Choix invalide. Veuillez sélectionner une option valide.")
-            except ValueError:
-                print("Entrée invalide. Veuillez entrer un numéro.")
-    
-    print("\nMerci d'avoir répondu au QCM.")
-    return reponses_utilisateur
-
-
 def Modifier_Qcm(nom, questions):
-    """
-    Modifie le nom, les questions ou les réponses d'un QCM.
-    """
     while True:
         print("\n1: Modifier le nom")
         print("2: Modifier une question ou une réponse")
         print("3: Ajouter une question ")
         print("4: Arrêter les modifications")
-        
+
         choix = input("Votre choix : ").strip()
         if choix == '1':
             nom = input("Nouveau nom du QCM : ")
@@ -82,11 +48,11 @@ def Modifier_Qcm(nom, questions):
             try:
                 num_question = int(input("Numéro de la question à modifier : "))
                 question_cible = list(questions.keys())[num_question - 1]
-                
+
                 print("1: Modifier la question")
                 print("2: Modifier une réponse")
                 choix_modif = input("Votre choix : ").strip()
-                
+
                 if choix_modif == '1':
                     nouvelle_question = input(f"Texte de la nouvelle question : ")
                     questions[nouvelle_question] = questions.pop(question_cible)
@@ -94,14 +60,14 @@ def Modifier_Qcm(nom, questions):
                     for idx, (rep, etat) in enumerate(questions[question_cible], 1):
                         etat_str = "correcte" if etat else "incorrecte"
                         print(f"{idx}. {rep} ({etat_str})")
-                    
+
                     num_reponse = int(input("Numéro de la réponse à modifier : "))
                     reponse_cible = questions[question_cible][num_reponse - 1]
-                    
+
                     print("1: Modifier le texte")
                     print("2: Modifier l'état")
                     choix_reponse = input("Votre choix : ").strip()
-                    
+
                     if choix_reponse == '1':
                         nouveau_texte = input("Nouveau texte de la réponse : ")
                         questions[question_cible][num_reponse - 1] = (nouveau_texte, reponse_cible[1])
@@ -115,7 +81,7 @@ def Modifier_Qcm(nom, questions):
             except (ValueError, IndexError):
                 print("Numéro invalide.")
         elif choix == '3':
-                ajouter_question(questions, len(questions) + 1)
+            ajouter_question(questions, len(questions) + 1)
         elif choix == '4':
             print("Modifications terminées.")
             break
@@ -123,46 +89,59 @@ def Modifier_Qcm(nom, questions):
             print("Choix invalide.")
     return nom
 
-
 def new_QCM():
     nom = input("Nom du QCM : ")
     questions = {}
     print("Appuyez sur '!' pour terminer le QCM.\n")
-    
+
     while True:
         ajouter_question(questions, len(questions) + 1)
         continuer = input("Ajouter une autre question ? (oui/non) : ").strip().lower()
-        if continuer != 'oui' :
-            if len(questions)+1>1:
+        if continuer != 'oui':
+            if len(questions) + 1 > 1:
                 break
             else:
                 print("le qcm doit contenir en moins 1 question")
-    
+
     print("QCM créé avec succès.")
     while True:
         print(f"Nom du QCM : {nom}")
         print("Questions et réponses :")
-        for idx_q, (q, reps) in enumerate(questions.items(), 1):  # Commence l'énumération des questions à 1
-            print(f"{idx_q}. {q}")  # Affiche le numéro de la question et son texte
-            for idx_r, (rep, etat) in enumerate(reps, 1):  # Commence l'énumération des réponses à 1
+        for idx_q, (q, reps) in enumerate(questions.items(), 1):
+            print(f"{idx_q}. {q}")
+            for idx_r, (rep, etat) in enumerate(reps, 1):
                 etat_str = "correcte" if etat else "incorrecte"
-                print(f"          {idx_r}. {rep} ({etat_str})")  # Affiche les réponses avec leur état
+                print(f"          {idx_r}. {rep} ({etat_str})")
         print("Confirmer la création du formulaire : 1")
         print("Apporter des modifications : 2")
         print("annuler le QCM : 3")
         choix = int(input("Votre choix : "))
         if choix == 1:
-            #ajout a la bdd
-            print("Fonctionnalité non encore implémentée.")
+            conn = connect_to_db()
+            cursor = conn.cursor()
+            try:
+                cursor.execute("INSERT INTO qcm (nomqcm, categorie, idprof) VALUES (%s, %s, %s)", (nom, 'Math', 1))
+                qcm_id = cursor.lastrowid
+                for question, reponses in questions.items():
+                    cursor.execute("INSERT INTO qst (idqcm, enonce) VALUES (%s, %s)", (qcm_id, question))
+                    qst_id = cursor.lastrowid
+                    for reponse, etat in reponses:
+                        cursor.execute("INSERT INTO answer (idqst, enonce, statut) VALUES (%s, %s, %s)", (qst_id, reponse, etat))
+                conn.commit()
+                print("QCM ajouté à la base de données avec succès.")
+            except mysql.connector.Error as err:
+                print(f"Erreur : {err}")
+            finally:
+                cursor.close()
+                conn.close()
             break
         elif choix == 2:
-            nom = Modifier_Qcm(nom, questions) 
-        elif choix==3:
-            print("QCM annulle avec succee")
+            nom = Modifier_Qcm(nom, questions)
+        elif choix == 3:
+            print("QCM annulé avec succès.")
             break
         else:
             print("Choix invalide. Veuillez réessayer.")
-
 
 def admin():
     while True:
@@ -175,6 +154,5 @@ def admin():
             new_QCM()
         else:
             print("Choix invalide.")
-
 
 admin()

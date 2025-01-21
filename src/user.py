@@ -3,6 +3,7 @@ from datetime import datetime
 import hashlib
 import pwinput # meme hadi make sure to install it
 from db import connect_to_db
+from admin import admin
 
 
 def hash_password(password):
@@ -46,12 +47,18 @@ def login():
 
     conn = connect_to_db()
     cursor = conn.cursor()
-    query = "SELECT password FROM users WHERE username = %s"
+    query = "SELECT password,role FROM users WHERE username = %s"
     cursor.execute(query, (username,))
     result = cursor.fetchone()
 
     if result and hash_password(password) == result[0]:
         print("Connexion réussie !")
+        if result[1] == 'prof':
+            print("Bienvenue Professeur")
+            admin()
+        else:
+            print(f"Bienvenue {username}")
+            user()
     else:
         print("Nom d'utilisateur ou mot de passe incorrect.")
 
