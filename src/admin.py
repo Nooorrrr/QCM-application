@@ -32,10 +32,11 @@ def ajouter_question(questions, numero_question):
     questions[question] = reponses
     print("Question ajoutée avec succès !")
 
-    def repondre_questions(questions):
-    """
-    Permet à l'utilisateur de répondre aux questions du QCM.
-    """
+    
+    #"""
+    #Permet à l'utilisateur de répondre aux questions du QCM.
+    #"""
+    #def repondre_questions(questions):
     reponses_utilisateur = []
     print("\nBienvenue dans la session de réponses au QCM. Répondez aux questions ci-dessous :\n")
     
