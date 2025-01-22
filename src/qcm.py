@@ -21,10 +21,6 @@ def fetch_qcm(category):
     return qcm
 
 def repondre_questions(questions):
-    """
-    Permet à l'utilisateur de répondre aux questions du QCM.
-    Évalue chaque réponse immédiatement après la saisie.
-    """
     score = 0 
     total_questions = len(questions)
     feedback = []

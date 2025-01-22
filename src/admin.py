@@ -1,4 +1,5 @@
-from src.db import connect_to_db
+from db import connect_to_db
+from main import main
 
 def ajouter_question(questions, numero_question):
     question = input(f"Q{numero_question}: ")
@@ -112,9 +113,9 @@ def new_QCM():
             for idx_r, (rep, etat) in enumerate(reps, 1):
                 etat_str = "correcte" if etat else "incorrecte"
                 print(f"          {idx_r}. {rep} ({etat_str})")
-        print("Confirmer la création du formulaire : 1")
-        print("Apporter des modifications : 2")
-        print("annuler le QCM : 3")
+        print("1: Confirmer la création du formulaire ")
+        print("2: Apporter des modifications ")
+        print("3: annuler le QCM ")
         choix = int(input("Votre choix : "))
         if choix == 1:
             conn = connect_to_db()
@@ -147,12 +148,16 @@ def admin():
     while True:
         print("1: Voir tous mes QCM")
         print("2: Créer un nouveau QCM")
+        print("3: Quitter")
         choix = input("Votre choix : ").strip()
         if choix == '1':
             print("Fonctionnalité non encore implémentée.")
         elif choix == '2':
             new_QCM()
+        elif choix == '3':
+            print("Déconnexion réussie.")
+            main()
+            break
         else:
             print("Choix invalide.")
 
-admin()
