@@ -17,7 +17,7 @@ def hash_password(password):
 #     if not any(char in "!@#$%^&*()-_=+[]{}|;:',.<>?/`~" for char in password):
 #         return "Le mot de passe doit contenir au moins un caractère spécial."
 #     return None  
-
+################################################################################
 def ppassword():
     while True:
         password = pwinput.pwinput("Entrez votre mot de passe: ")  
@@ -27,7 +27,7 @@ def ppassword():
         else:
             break
     return password
-
+################################################################################
 def validate_username(username):
     #checl if username already exists
     conn = connect_to_db()
@@ -40,31 +40,34 @@ def validate_username(username):
     if result:
         return "Ce nom d'utilisateur est déjà pris."
     return None  
-
+################################################################################
 def login():
     username = input("Entrez votre nom d'utilisateur: ")
     password = pwinput.pwinput("Entrez votre mot de passe: ")  # Affiche des astérisques
 
     conn = connect_to_db()
     cursor = conn.cursor()
-    query = "SELECT password,role FROM users WHERE username = %s"
+    query = "SELECT user_id, password, role FROM users WHERE username = %s"
     cursor.execute(query, (username,))
     result = cursor.fetchone()
 
-    if result and hash_password(password) == result[0]:
+    if result and hash_password(password) == result[1]:
         print("Connexion réussie !")
-        if result[1] == 'prof':
+        user_id = result[0]  # Correctly fetch the user_id
+        password=result[1]
+        if result[2] == 'prof':  # Check if the role is 'prof'
             print("Bienvenue Professeur")
-            admin()
+            admin(user_id,password)  # Pass the user_id to admin
         else:
             print(f"Bienvenue {username}")
-            user()
+            #user()
     else:
         print("Nom d'utilisateur ou mot de passe incorrect.")
 
     cursor.close()
     conn.close()
 
+################################################################################
 def signup():
     while True:
         username = input("Entrez un nom d'utilisateur: ")
