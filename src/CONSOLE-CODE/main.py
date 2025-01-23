@@ -2,6 +2,7 @@
 
 # Menu principal
 def main():
+    print("---------------------- WELCOME TO THE QUIZ APP ----------------------")
     print("1. Connexion")
     print("2. Inscription")
     choice = input("Choisissez une option (1 ou 2): ")

@@ -57,10 +57,10 @@ def login():
         user_id = result[0]  # Correctly fetch the user_id
         password=result[1]
         if result[2] == 'prof':  # Check if the role is 'prof'
-            print("Bienvenue Professeur")
+            print("---------------------- Bienvenue Professeur ----------------------")
             admin(user_id,password)  # Pass the user_id to admin
         else:
-            print(f"Bienvenue {username}")
+            print(f"---------------------- Bienvenue {username} ----------------------")
             user_menu(result[0])  
     else:
         print("Nom d'utilisateur ou mot de passe incorrect.")
@@ -71,6 +71,7 @@ def login():
 ################################################################################
 def signup():
     while True:
+        print("\n---------------------- Inscription ----------------------")
         username = input("Entrez un nom d'utilisateur: ")
         error = validate_username(username)
         if error:
@@ -90,11 +91,13 @@ def signup():
         query = """
             INSERT INTO users (username, password, name, email, role) 
             VALUES (%s, %s, %s, %s, 'user') 
-        """   #role par default 7a ndiroh user
+        """   #role par default 7a ndiroh user ida 7abito tcreiw prof just bedlolo role f php my admin
         try:
             cursor.execute(query, (username, hashed_password, name, email))
             conn.commit()
             print("Compte créé avec succès !")
+            
+
             break
         except mysql.connector.Error as err:
             print(f"Erreur : {err}")
@@ -105,7 +108,7 @@ def signup():
 #################################################################################
 def user_menu(user_id):
     while True:
-        print("\n--- Menu Utilisateur ---")
+        print("\n---------------------- Menu Utilisateur ----------------------")
         print("1. Répondre à un QCM")
         print("2. Voir l'historique des QCM")
         print("3. Déconnexion")

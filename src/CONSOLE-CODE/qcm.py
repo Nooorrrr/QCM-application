@@ -52,11 +52,15 @@ def repondre_questions(questions):
                 except ValueError:
                     print("Entrée invalide. Veuillez entrer un numéro.")
         
-        print("\n--- Résultats ---")
+        print("\n---------------------- Résultats ----------------------")
         print(f"Score total : {score}/{total_questions}")
-        return {
-            "time": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "score": score,
-            "total_questions": total_questions,
-            "feedback": feedback,
-        }
+        print(f"Temps : {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("Feedback :")
+        for idx_q, (question, is_correct, answer) in enumerate(feedback, 1):
+            print(f"{idx_q}. {question}")
+            if is_correct:
+                print(f"   \033[92mCorrect!\033[0m")
+            else:
+                print(f"   \033[91mIncorrect.\033[0m")
+                print(f"   La bonne réponse : {answer}")
+        
