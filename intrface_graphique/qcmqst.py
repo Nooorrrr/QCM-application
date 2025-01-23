@@ -3,9 +3,10 @@ from conn import connect_to_database
 import pymysql.cursors
 
 class QCMApp:
-    def __init__(self, root, qcm_id):
+    def __init__(self, root, qcm_id, user_id):
         self.root = root
-        self.qcm_id = qcm_id  # ID du QCM sélectionné (passé depuis main.py)
+        self.qcm_id = qcm_id  # ID du QCM sélectionné
+        self.user_id = user_id  # ID de l'utilisateur connecté
         self.root.title(f"QCM Interface - QCM {qcm_id}")
         self.root.geometry("800x600")
 
@@ -46,7 +47,7 @@ class QCMApp:
             width=150,
             command=self.calculate_score  # Appeler la méthode pour calculer et afficher le score
         )
-        self.submit_btn.pack(pady=(20, 10))  # Espacement autour du bouton
+        self.submit_btn.pack(pady=(20, 10))
 
     def fetch_qcm_info(self):
         """Récupérer toutes les informations du QCM depuis la base de données"""
@@ -128,8 +129,26 @@ class QCMApp:
             # Afficher le score à l'utilisateur
             self.show_score(user_score, total_correct_answers)
 
+            # Enregistrer le score dans la base de données (optionnel)
+            self.save_score(user_score)
+
         except Exception as e:
             print("Erreur lors du calcul du score :", e)
+
+    def save_score(self, score):
+        """Enregistrer le score de l'utilisateur dans la base de données"""
+        try:
+            mydb = connect_to_database()
+            cursor = mydb.cursor()
+            query = "INSERT INTO qcm_user (iduser, idqcm, note) VALUES (%s, %s, %s)"
+            cursor.execute(query, (self.user_id, self.qcm_id, score))
+            mydb.commit()
+            print("Score enregistré avec succès.")
+        except Exception as e:
+            print("Erreur lors de l'enregistrement du score :", e)
+        finally:
+            if 'mydb' in locals() and mydb:
+                mydb.close()
 
     def show_score(self, user_score, total_correct_answers):
         """Afficher le score à l'utilisateur"""
@@ -166,5 +185,6 @@ class QCMApp:
 if __name__ == "__main__":
     root = ctk.CTk()
     qcm_id = 1  # Cette ligne est uniquement pour les tests. En production, l'ID est passé depuis main.py.
-    app = QCMApp(root, qcm_id)
+    user_id = 3  # ID de l'utilisateur (à remplacer par la valeur réelle)
+    app = QCMApp(root, qcm_id, user_id)
     root.mainloop()
