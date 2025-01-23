@@ -100,8 +100,6 @@ def signup():
             cursor.close()
             conn.close()
 
-
-
 def user_menu(user_id):
     while True:
         print("\n--- Menu Utilisateur ---")
@@ -155,26 +153,27 @@ def user_menu(user_id):
 def save_quiz_results(user_id, qcm_id, score, total_questions):
     conn = connect_to_db()
     cursor = conn.cursor()
-    query = """
-        INSERT INTO qcm_user (iduser, idqcm, note) 
-        VALUES (%s, %s, %s)
-    """
-    cursor.execute(query, (user_id, qcm_id, (score / total_questions) * 100))
+    
+    # Check if the entry already exists
+    query_check = "SELECT * FROM qcm_user WHERE user_id = %s AND qcm_id = %s"
+    cursor.execute(query_check, (user_id, qcm_id))
+    result = cursor.fetchone()
+    
+    if result:
+        print("Entry already exists. Updating the existing record.")
+        query_update = """
+            UPDATE qcm_user 
+            SET score = %s 
+            WHERE user_id = %s AND qcm_id = %s
+        """
+        cursor.execute(query_update, ((score / total_questions) * 100, user_id, qcm_id))
+    else:
+        query_insert = """
+            INSERT INTO qcm_user (user_id, qcm_id, score) 
+            VALUES (%s, %s, %s)
+        """
+        cursor.execute(query_insert, (user_id, qcm_id, (score / total_questions) * 100))
+    
     conn.commit()
     cursor.close()
     conn.close()
-
-def fetch_user_history(user_id):
-    conn = connect_to_db()
-    cursor = conn.cursor()
-    query = """
-        SELECT qcm.nomqcm, qcm_user.note, qcm_user.timestamp 
-        FROM qcm_user 
-        JOIN qcm ON qcm_user.idqcm = qcm.idqcm 
-        WHERE qcm_user.iduser = %s
-    """
-    cursor.execute(query, (user_id,))
-    history = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return history

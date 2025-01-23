@@ -25,9 +25,6 @@ def repondre_questions(questions):
     total_questions = len(questions)
     feedback = []
     time = datetime.now()
-    
-    print("\nBienvenue dans la session de réponses au QCM. Répondez aux questions ci-dessous :\n")
-    
     for idx_q, (question, reponses) in enumerate(questions.items(), 1):
         print(f"Question {idx_q}: {question}")
         for idx_r, (reponse, _) in enumerate(reponses, 1):
@@ -57,7 +54,6 @@ def repondre_questions(questions):
     
     print("\n--- Résultats ---")
     print(f"Score total : {score}/{total_questions}")
-
     return {
         "time": time.strftime("%Y-%m-%d %H:%M:%S"),
         "score": score,

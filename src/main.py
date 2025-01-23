@@ -1,4 +1,4 @@
-from user import login, signup
+
 
 # Menu principal
 def main():
@@ -7,8 +7,10 @@ def main():
     choice = input("Choisissez une option (1 ou 2): ")
 
     if choice == '1':
+        from user import login
         login()
     elif choice == '2':
+        from user import signup
         signup()
     else:
         print("Choix invalide.")
