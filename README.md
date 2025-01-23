@@ -30,7 +30,7 @@ Une application de création et de gestion de QCM (Questionnaire à Choix Multip
 
 ## Liens utiles
 
-- **Prototype Figma** : [Lien vers le prototype Figma]([https://www.figma.com/your-prototype-link](https://www.figma.com/design/dwzwWOrA3yCBxn8TW9TO4J/Untitled?node-id=0-1&t=62rFdj8bt2EggBCu-1))  
+- **Prototype Figma** : [Lien vers le prototype Figma](https://www.figma.com/design/dwzwWOrA3yCBxn8TW9TO4J/Untitled?node-id=0-1&t=62rFdj8bt2EggBCu-1)
   Consultez la conception de l'interface utilisateur sur Figma.
 
 - **Vidéo de démonstration** : [Lien vers la vidéo YouTube](https://www.youtube.com/your-video-link)  
