@@ -13,8 +13,7 @@ def connect_to_db():
 ###################################################
 
 def new_QCM(user_id, password):
-    print(f"le PASSWORD est {password}")
-    print(f"le id est {user_id}")
+
 
     nom = input("Nom du QCM : ")
 
@@ -222,9 +221,6 @@ def Modifier_Qcm(nom, questions):
 
 def admin(user_id,password):
     while True:
-        print(f"le PASSWORD est {password}")
-        print(f"le id est {user_id}")
-
         print("1: Voir tous mes QCM")
         print("2: Créer un nouveau QCM")
         choix = input("Votre choix : ").strip()
