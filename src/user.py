@@ -61,7 +61,7 @@ def login():
             admin(user_id,password)  # Pass the user_id to admin
         else:
             print(f"Bienvenue {username}")
-            #user()
+            user_menu(result[0])  
     else:
         print("Nom d'utilisateur ou mot de passe incorrect.")
 
@@ -102,6 +102,7 @@ def signup():
             cursor.close()
             conn.close()
 
+#################################################################################
 def user_menu(user_id):
     while True:
         print("\n--- Menu Utilisateur ---")
@@ -171,7 +172,7 @@ def save_quiz_results(user_id, qcm_id, score, total_questions):
     conn = connect_to_db()
     cursor = conn.cursor()
     
-    # Check if the entry already exists
+    # Check if the entry already exists f la bddd
     query_check = "SELECT * FROM qcm_user WHERE iduser = %s AND idqcm = %s"
     cursor.execute(query_check, (user_id, qcm_id))
     result = cursor.fetchone()
