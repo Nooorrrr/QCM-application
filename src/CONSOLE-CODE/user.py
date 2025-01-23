@@ -96,8 +96,7 @@ def signup():
             cursor.execute(query, (username, hashed_password, name, email))
             conn.commit()
             print("Compte créé avec succès !")
-            
-
+        
             break
         except mysql.connector.Error as err:
             print(f"Erreur : {err}")
@@ -141,6 +140,8 @@ def user_menu(user_id):
             conn.close()
 
             results = repondre_questions(questions)
+            print(results["score"])
+           
             save_quiz_results(user_id, selected_qcm_id, results["score"], results["total_questions"])
 
         elif choice == '2':
@@ -175,7 +176,7 @@ def save_quiz_results(user_id, qcm_id, score, total_questions):
     conn = connect_to_db()
     cursor = conn.cursor()
     
-    # Check if the entry already exists f la bddd
+    # Check if the entry already exists
     query_check = "SELECT * FROM qcm_user WHERE iduser = %s AND idqcm = %s"
     cursor.execute(query_check, (user_id, qcm_id))
     result = cursor.fetchone()

@@ -63,4 +63,9 @@ def repondre_questions(questions):
             else:
                 print(f"   \033[91mIncorrect.\033[0m")
                 print(f"   La bonne réponse : {answer}")
-        
+        return {
+            "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "score": score,
+            "total_questions": total_questions,
+            "feedback": feedback,
+        }
