@@ -21,17 +21,10 @@ def fetch_qcm(category):
     return qcm
 
 def repondre_questions(questions):
-    """
-    Permet à l'utilisateur de répondre aux questions du QCM.
-    Évalue chaque réponse immédiatement après la saisie.
-    """
     score = 0 
     total_questions = len(questions)
     feedback = []
     time = datetime.now()
-    
-    print("\nBienvenue dans la session de réponses au QCM. Répondez aux questions ci-dessous :\n")
-    
     for idx_q, (question, reponses) in enumerate(questions.items(), 1):
         print(f"Question {idx_q}: {question}")
         for idx_r, (reponse, _) in enumerate(reponses, 1):
@@ -61,7 +54,6 @@ def repondre_questions(questions):
     
     print("\n--- Résultats ---")
     print(f"Score total : {score}/{total_questions}")
-
     return {
         "time": time.strftime("%Y-%m-%d %H:%M:%S"),
         "score": score,

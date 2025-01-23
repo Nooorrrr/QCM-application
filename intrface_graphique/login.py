@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 import tkinter as tk
 import customtkinter as ctk
 import mysql.connector  # Remplace pymysql
 from mysql.connector import Error
+=======
+import customtkinter as ctk
+>>>>>>> 1bea7b4f06f9bd35e643544af29b205b47426ca1
 from tkinter import messagebox
+
 
 
 def connect_to_database():
@@ -18,6 +23,7 @@ def connect_to_database():
         print(f"Erreur de connexion à la base de données : {e}")
         return None
 
+<<<<<<< HEAD
 def fetch_qcm_data():
     try:
         mydb = connect_to_database()
@@ -39,41 +45,35 @@ def fetch_qcm_data():
 
 def show_login_window():
     login_window = tk.Tk()
+=======
+
+def show_login_window(signup_window=None):
+    login_window = ctk.CTk()
+>>>>>>> 1bea7b4f06f9bd35e643544af29b205b47426ca1
     login_window.title("Login")
     login_window.geometry("800x500")
-    login_window.configure(bg="#0a0a0a")
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("dark-blue")
 
-    # Menu latéral
-    menu_frame = tk.Frame(login_window, bg="#1a1a1a", width=150, height=500)
-    menu_frame.pack(side="left", fill="y")
-    menu_frame.pack_propagate(False)
+    # Sidebar Menu
+    sidebar = ctk.CTkFrame(login_window, width=150)
+    sidebar.pack(side="left", fill="y", padx=10, pady=10)
+    ctk.CTkLabel(sidebar, text="MENU", font=("Arial", 16, "bold")).pack(pady=(20, 10))
 
-    menu_title = tk.Label(menu_frame, text="MENU", bg="#1a1a1a", fg="white", font=("Helvetica", 14, "bold"))
-    menu_title.pack(pady=20)
+    ctk.CTkButton(sidebar, text="LOGIN", command=lambda: None).pack(pady=10, fill="x")
+    ctk.CTkButton(sidebar, text="SIGN-UP", command=lambda: [login_window.withdraw(), show_signup_window(login_window)]).pack(pady=10, fill="x")
 
-    def open_signup():
-        login_window.destroy()
-        show_signup_window()
-
-    def open_login():
-        pass  # Déjà sur la page Login
-
-    tk.Button(menu_frame, text="LOGIN", bg="#1a1a1a", fg="white", font=("Helvetica", 10),
-              relief="flat", cursor="hand2", command=open_login).place(x=0, y=150, width=150)
-    tk.Button(menu_frame, text="SIGN-UP", bg="#1a1a1a", fg="white", font=("Helvetica", 10),
-              relief="flat", cursor="hand2", command=open_signup).place(x=0, y=200, width=150)
-
-    # Contenu Login
-    form_frame = tk.Frame(login_window, bg="#1a1a1a", padx=20, pady=20, width=500)
+    # Login Form
+    form_frame = ctk.CTkFrame(login_window, width=800, height=500, corner_radius=10)
     form_frame.place(relx=0.5, rely=0.5, anchor="center")
 
-    tk.Label(form_frame, text="Email", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    email_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), insertbackground="white")
-    email_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
+    ctk.CTkLabel(form_frame, text="Email", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(20, 5))
+    email_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your email")
+    email_entry.pack(fill="x", padx=20, pady=(0, 10))
 
-    tk.Label(form_frame, text="Password", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    password_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), show="*", insertbackground="white")
-    password_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
+    ctk.CTkLabel(form_frame, text="Password", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(10, 5))
+    password_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your password", show="*")
+    password_entry.pack(fill="x", padx=20, pady=(0, 10))
 
     def login():
         email = email_entry.get()
@@ -100,70 +100,61 @@ def show_login_window():
             finally:
                 connection.close()
 
-    tk.Button(form_frame, text="Login", bg="#333333", fg="white", font=("Helvetica", 12),
-              relief="flat", cursor="hand2", command=login).pack(fill="x", pady=(10, 0), ipadx=5, ipady=5)
+    ctk.CTkButton(form_frame, text="Login", command=login).pack(pady=(20, 10))
+
+    if signup_window:
+        signup_window.withdraw()  # Masquer la fenêtre d'inscription
 
     login_window.mainloop()
 
-def show_signup_window():
-    signup_window = tk.Tk()
+
+def show_signup_window(login_window=None):
+    signup_window = ctk.CTk()
     signup_window.title("Sign-Up")
     signup_window.geometry("800x500")
-    signup_window.configure(bg="#0a0a0a")
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("dark-blue")
 
-    # Menu latéral
-    menu_frame = tk.Frame(signup_window, bg="#1a1a1a", width=150, height=500)
-    menu_frame.pack(side="left", fill="y")
-    menu_frame.pack_propagate(False)
+    # Sidebar Menu
+    sidebar = ctk.CTkFrame(signup_window, width=150)
+    sidebar.pack(side="left", fill="y", padx=10, pady=10)
+    ctk.CTkLabel(sidebar, text="MENU", font=("Arial", 16, "bold")).pack(pady=(20, 10))
 
-    menu_title = tk.Label(menu_frame, text="MENU", bg="#1a1a1a", fg="white", font=("Helvetica", 14, "bold"))
-    menu_title.pack(pady=20)
+    ctk.CTkButton(sidebar, text="LOGIN", command=lambda: [signup_window.withdraw(), show_login_window(signup_window)]).pack(pady=10, fill="x")
+    ctk.CTkButton(sidebar, text="SIGN-UP", command=lambda: None).pack(pady=10, fill="x")
 
-    def open_login():
-        signup_window.destroy()
-        show_login_window()
-
-    def open_signup():
-        pass  # Déjà sur la page Sign-Up
-
-    tk.Button(menu_frame, text="LOGIN", bg="#1a1a1a", fg="white", font=("Helvetica", 10),
-              relief="flat", cursor="hand2", command=open_login).place(x=0, y=150, width=150)
-    tk.Button(menu_frame, text="SIGN-UP", bg="#1a1a1a", fg="white", font=("Helvetica", 10),
-              relief="flat", cursor="hand2", command=open_signup).place(x=0, y=200, width=150)
-
-    # Contenu Sign-Up
-    form_frame = tk.Frame(signup_window, bg="#1a1a1a", padx=20, pady=20, width=500)
+    # Sign-Up Form
+    form_frame = ctk.CTkFrame(signup_window, width=600, height=800, corner_radius=10)
     form_frame.place(relx=0.5, rely=0.5, anchor="center")
 
-    tk.Label(form_frame, text="Username", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    username_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), insertbackground="white")
-    username_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
+    ctk.CTkLabel(form_frame, text="Username", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(20, 5))
+    username_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your username")
+    username_entry.pack(fill="x", padx=20, pady=(0, 10))
 
+    ctk.CTkLabel(form_frame, text="Name", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(10, 5))
+    name_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your name")
+    name_entry.pack(fill="x", padx=20, pady=(0, 10))
 
-    tk.Label(form_frame, text="name", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    name_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), insertbackground="white")
-    name_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
+    ctk.CTkLabel(form_frame, text="Email", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(10, 5))
+    email_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your email")
+    email_entry.pack(fill="x", padx=20, pady=(0, 10))
 
-    tk.Label(form_frame, text="Email", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    email_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), insertbackground="white")
-    email_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
+    ctk.CTkLabel(form_frame, text="Password", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(10, 5))
+    password_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your password", show="*")
+    password_entry.pack(fill="x", padx=20, pady=(0, 10))
 
-    tk.Label(form_frame, text="Password", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    password_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), show="*", insertbackground="white")
-    password_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
-
-    tk.Label(form_frame, text="Confirm Password", bg="#1a1a1a", fg="white", font=("Helvetica", 12)).pack(anchor="w")
-    confirm_password_entry = tk.Entry(form_frame, bg="#333333", fg="white", font=("Helvetica", 12), show="*", insertbackground="white")
-    confirm_password_entry.pack(fill="x", pady=(5, 10), ipadx=5, ipady=5)
+    ctk.CTkLabel(form_frame, text="Confirm Password", font=("Arial", 14)).pack(anchor="w", padx=20, pady=(10, 5))
+    confirm_password_entry = ctk.CTkEntry(form_frame, placeholder_text="Confirm your password", show="*")
+    confirm_password_entry.pack(fill="x", padx=20, pady=(0, 10))
 
     def signup():
         username = username_entry.get()
-        name=name_entry.get()
+        name = name_entry.get()
         email = email_entry.get()
         password = password_entry.get()
         confirm_password = confirm_password_entry.get()
 
-        if not (username and email and password and confirm_password):
+        if not (username and name and email and password and confirm_password):
             messagebox.showwarning("Error", "Please fill in all fields.")
             return
 
@@ -182,22 +173,29 @@ def show_signup_window():
                         return
 
                     query = "INSERT INTO users (username, name, email, password, role) VALUES (%s, %s, %s, %s, %s)"
-                    cursor.execute(query,
-                                   (username, name, email, password, 'user'))  # Définir 'user' comme rôle par défaut
-
+                    cursor.execute(query, (username, name, email, password, 'user'))
                     connection.commit()
                     messagebox.showinfo("Success", "Sign-Up successful!")
+<<<<<<< HEAD
                     signup_window.destroy()
                     show_login_window()
             except mysql.connector.Error as e:
+=======
+                    signup_window.withdraw()
+                    show_login_window(signup_window)
+            except pymysql.MySQLError as e:
+>>>>>>> 1bea7b4f06f9bd35e643544af29b205b47426ca1
                 messagebox.showerror("Database Error", f"An error occurred: {e}")
             finally:
                 connection.close()
 
-    tk.Button(form_frame, text="Sign Up", bg="#333333", fg="white", font=("Helvetica", 12),
-              relief="flat", cursor="hand2", command=signup).pack(fill="x", pady=(10, 0), ipadx=5, ipady=5)
+    ctk.CTkButton(form_frame, text="Sign Up", command=signup).pack(pady=(20, 10))
+
+    if login_window:
+        login_window.withdraw()  # Masquer la fenêtre de connexion
 
     signup_window.mainloop()
 
-# Lancer la première fenêtre Login
+
+# Launch the Login Window
 show_login_window()
