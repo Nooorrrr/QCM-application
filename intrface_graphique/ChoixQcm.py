@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from conn import connect_to_database
-from qcmqst import QCMApp
+from qcmqst import QCMApp  # Importer la classe QCMApp depuis qcmqst.py
 
 
 def fetch_qcm_data():
@@ -20,9 +20,9 @@ def fetch_qcm_data():
 
 
 class QCMSInterface:
-    def __init__(self, root):
-        # Configuration principale
+    def __init__(self, root, user_id):
         self.root = root
+        self.user_id = user_id  # ID de l'utilisateur connecté
         self.root.title("QCMS")
         ctk.set_appearance_mode("dark")  # Mode sombre
         ctk.set_default_color_theme("dark-blue")
@@ -118,11 +118,12 @@ class QCMSInterface:
         qcm_window.geometry("800x600")  # Définir la taille
         qcm_window.transient(self.root)  # Lier la fenêtre
         qcm_window.grab_set()
-        QCMApp(qcm_window, qcm_id)
+        QCMApp(qcm_window, qcm_id, self.user_id)  # Passer l'ID utilisateur à QCMApp
 
 
 if __name__ == "__main__":
     root = ctk.CTk()
     root.geometry("900x600")
-    app = QCMSInterface(root)
+    user_id = 1  # Remplacez cette valeur par l'ID de l'utilisateur réel
+    app = QCMSInterface(root, user_id)  # Passer l'ID utilisateur
     root.mainloop()
