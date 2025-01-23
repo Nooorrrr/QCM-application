@@ -1,0 +1,24 @@
+def login():
+    username = input("Entrez votre nom d'utilisateur: ")
+    password = pwinput.pwinput("Entrez votre mot de passe: ")  # Affiche des astérisques
+
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    query = "SELECT password, role, id FROM users WHERE username = %s"
+    cursor.execute(query, (username,))
+    result = cursor.fetchone()
+
+    if result and hash_password(password) == result[0]:
+        print("Connexion réussie !")
+        user_id = result[2]  # Récupérer l'ID de l'utilisateur connecté
+        if result[1] == 'prof':
+            print("Bienvenue Professeur")
+            admin(user_id)  # Passer l'ID de l'utilisateur à admin
+        else:
+            print(f"Bienvenue {username}")
+            # user()  # Si vous avez une fonction pour les utilisateurs normaux
+    else:
+        print("Nom d'utilisateur ou mot de passe incorrect.")
+
+    cursor.close()
+    conn.close()

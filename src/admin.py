@@ -1,5 +1,132 @@
-from db import connect_to_db
-from main import main
+import hashlib
+import mysql.connector
+from db import get_user_id  # Assurez-vous d'importer la fonction pour récupérer l'ID de l'utilisateur
+
+def connect_to_db():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="pswd",  # Utilisez le mot de passe correct pour la connexion
+        database="qcm_test"
+    )
+
+###################################################
+
+def new_QCM(user_id, password):
+    print(f"le PASSWORD est {password}")
+    print(f"le id est {user_id}")
+
+    nom = input("Nom du QCM : ")
+
+
+    # Liste des catégories possibles
+    categories = ['THI', 'BI', 'COMPILE', 'AP', 'GL', 'RO', 'CRYPTO', 'WEB']
+
+    # Choix de la catégorie
+    while True:
+        print("Choisissez une catégorie parmi les suivantes :")
+        for idx, cat in enumerate(categories, 1):
+            print(f"{idx}: {cat}")
+        choix = input("Votre choix (entrez le numéro ou le nom de la catégorie) : ").strip()
+
+        # Vérifiez si l'entrée est valide
+        if choix.isdigit() and 1 <= int(choix) <= len(categories):
+            categorie = categories[int(choix) - 1]
+            break
+        elif choix.upper() in categories:
+            categorie = choix.upper()
+            break
+        else:
+            print("Catégorie invalide. Veuillez réessayer.")
+
+
+    questions = {}
+    print("Appuyez sur '!' pour terminer le QCM.\n")
+
+    while True:
+        ajouter_question(questions, len(questions) + 1)
+        continuer = input("Ajouter une autre question ? (oui/non) : ").strip().lower()
+        if continuer != 'oui':
+            if len(questions) + 1 > 1:
+                break
+            else:
+                print("Le QCM doit contenir au moins 1 question.")
+
+    print("QCM créé avec succès.")
+    while True:
+        print(f"Nom du QCM : {nom}")
+        print(f"Catégorie : {categorie}")
+        print("Questions et réponses :")
+        for idx_q, (q, reps) in enumerate(questions.items(), 1):
+            print(f"{idx_q}. {q}")
+            for idx_r, (rep, etat) in enumerate(reps, 1):
+                etat_str = "correcte" if etat else "incorrecte"
+                print(f"          {idx_r}. {rep} ({etat_str})")
+        print("Confirmer la création du formulaire : 1")
+        print("Apporter des modifications : 2")
+        print("Annuler le QCM : 3")
+        choix = int(input("Votre choix : "))
+        if choix == 1:
+            conn = connect_to_db()
+            cursor = conn.cursor()
+            try:
+                # Insertion du QCM avec l'ID du professeur connecté
+                cursor.execute("INSERT INTO qcm (nomqcm, categorie, idprof) VALUES (%s, %s, %s)", (nom, categorie, user_id))
+                qcm_id = cursor.lastrowid
+                for question, reponses in questions.items():
+                    cursor.execute("INSERT INTO qst (idqcm, enonce) VALUES (%s, %s)", (qcm_id, question))
+                    qst_id = cursor.lastrowid
+                    for reponse, etat in reponses:
+                        cursor.execute("INSERT INTO answer (idqst, enonce, statut) VALUES (%s, %s, %s)", (qst_id, reponse, etat))
+                conn.commit()
+                print("QCM ajouté à la base de données avec succès.")
+            except mysql.connector.Error as err:
+                print(f"Erreur : {err}")
+            finally:
+                cursor.close()
+                conn.close()
+            break
+        elif choix == 2:
+            nom = Modifier_Qcm(nom, questions)
+        elif choix == 3:
+            print("QCM annulé avec succès.")
+            break
+        else:
+            print("Choix invalide. Veuillez réessayer.")
+############################################################
+def voir_qcms(user_id):
+    conn = connect_to_db()
+    if conn is None:
+        print("Erreur de connexion à la base de données.")
+        return
+    cursor = conn.cursor()
+
+    # Récupérer l'ID du professeur connecté
+    prof_id = user_id  # Assurez-vous que user_id est l'ID correct du professeur
+    print(f"Affichage des QCM du professeur ID : {prof_id}")
+
+    # Sélectionner uniquement les QCMs du professeur connecté
+    cursor.execute("""
+        SELECT qcm.idqcm, qcm.nomqcm, COUNT(qcm_user.iduser) AS nb_prsn
+        FROM qcm
+        LEFT JOIN qcm_user ON qcm.idqcm = qcm_user.idqcm
+        WHERE qcm.idprof = %s
+        GROUP BY qcm.idqcm
+    """, (prof_id,))
+
+    # Afficher les résultats dans un format de tableau
+    print(f"{'ID QCM':<10} {'Nom du QCM':<30} {'Nombre de personnes ayant répondu':<30}")
+    print("-" * 70)
+
+    # Afficher chaque QCM et le nombre de personnes ayant répondu
+    for (idqcm, nomqcm, nb_prsn) in cursor.fetchall():
+        print(f"{idqcm:<10} {nomqcm:<30} {nb_prsn:<30}")
+
+    # Fermer la connexion
+    cursor.close()
+    conn.close()
+
+#########################################################
 
 def ajouter_question(questions, numero_question):
     question = input(f"Q{numero_question}: ")
@@ -31,6 +158,8 @@ def ajouter_question(questions, numero_question):
 
     questions[question] = reponses
     print("Question ajoutée avec succès !")
+
+################################################################################
 
 def Modifier_Qcm(nom, questions):
     while True:
@@ -89,75 +218,21 @@ def Modifier_Qcm(nom, questions):
         else:
             print("Choix invalide.")
     return nom
+################################################################################
 
-def new_QCM():
-    nom = input("Nom du QCM : ")
-    questions = {}
-    print("Appuyez sur '!' pour terminer le QCM.\n")
-
+def admin(user_id,password):
     while True:
-        ajouter_question(questions, len(questions) + 1)
-        continuer = input("Ajouter une autre question ? (oui/non) : ").strip().lower()
-        if continuer != 'oui':
-            if len(questions) + 1 > 1:
-                break
-            else:
-                print("le qcm doit contenir en moins 1 question")
+        print(f"le PASSWORD est {password}")
+        print(f"le id est {user_id}")
 
-    print("QCM créé avec succès.")
-    while True:
-        print(f"Nom du QCM : {nom}")
-        print("Questions et réponses :")
-        for idx_q, (q, reps) in enumerate(questions.items(), 1):
-            print(f"{idx_q}. {q}")
-            for idx_r, (rep, etat) in enumerate(reps, 1):
-                etat_str = "correcte" if etat else "incorrecte"
-                print(f"          {idx_r}. {rep} ({etat_str})")
-        print("1: Confirmer la création du formulaire ")
-        print("2: Apporter des modifications ")
-        print("3: annuler le QCM ")
-        choix = int(input("Votre choix : "))
-        if choix == 1:
-            conn = connect_to_db()
-            cursor = conn.cursor()
-            try:
-                cursor.execute("INSERT INTO qcm (nomqcm, categorie, idprof) VALUES (%s, %s, %s)", (nom, 'Math', 1))
-                qcm_id = cursor.lastrowid
-                for question, reponses in questions.items():
-                    cursor.execute("INSERT INTO qst (idqcm, enonce) VALUES (%s, %s)", (qcm_id, question))
-                    qst_id = cursor.lastrowid
-                    for reponse, etat in reponses:
-                        cursor.execute("INSERT INTO answer (idqst, enonce, statut) VALUES (%s, %s, %s)", (qst_id, reponse, etat))
-                conn.commit()
-                print("QCM ajouté à la base de données avec succès.")
-            except mysql.connector.Error as err:
-                print(f"Erreur : {err}")
-            finally:
-                cursor.close()
-                conn.close()
-            break
-        elif choix == 2:
-            nom = Modifier_Qcm(nom, questions)
-        elif choix == 3:
-            print("QCM annulé avec succès.")
-            break
-        else:
-            print("Choix invalide. Veuillez réessayer.")
-
-def admin():
-    while True:
         print("1: Voir tous mes QCM")
         print("2: Créer un nouveau QCM")
-        print("3: Quitter")
         choix = input("Votre choix : ").strip()
         if choix == '1':
-            print("Fonctionnalité non encore implémentée.")
+            voir_qcms(user_id)
         elif choix == '2':
-            new_QCM()
-        elif choix == '3':
-            print("Déconnexion réussie.")
-            main()
-            break
+            new_QCM(user_id,password)
         else:
             print("Choix invalide.")
 
+#admin()

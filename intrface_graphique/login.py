@@ -1,26 +1,55 @@
+<<<<<<< HEAD
+import tkinter as tk
 import customtkinter as ctk
+import mysql.connector  # Remplace pymysql
+from mysql.connector import Error
+=======
+import customtkinter as ctk
+>>>>>>> 1bea7b4f06f9bd35e643544af29b205b47426ca1
 from tkinter import messagebox
-import pymysql
-from pymysql.cursors import DictCursor
+
 
 
 def connect_to_database():
     try:
-        connection = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='',
-            database='qcm_py',
-            cursorclass=DictCursor
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="pswd",#diro password ta3kom hna, bon genrallemnt faregh, mais bon
+            database="qcm_test"
         )
         return connection
-    except pymysql.MySQLError as e:
-        messagebox.showerror("Database Error", f"Failed to connect to database: {e}")
+    except Error as e:
+        print(f"Erreur de connexion à la base de données : {e}")
         return None
 
+<<<<<<< HEAD
+def fetch_qcm_data():
+    try:
+        mydb = connect_to_database()
+        if not mydb:
+            raise Exception("La connexion à la base de données a échoué.")
+        
+        cursor = mydb.cursor(dictionary=True)  # Pour obtenir les résultats sous forme de dictionnaire
+        cursor.execute("SELECT nomqcm, categorie, name FROM qcm JOIN users ON qcm.idprof = users.user_id")
+        qcm_data = cursor.fetchall()
+        return qcm_data
+    except Exception as e:
+        print("Erreur lors de la récupération des données :", e)
+        return []
+    finally:
+        if 'mydb' in locals() and mydb:
+            mydb.close()
+
+
+
+def show_login_window():
+    login_window = tk.Tk()
+=======
 
 def show_login_window(signup_window=None):
     login_window = ctk.CTk()
+>>>>>>> 1bea7b4f06f9bd35e643544af29b205b47426ca1
     login_window.title("Login")
     login_window.geometry("800x500")
     ctk.set_appearance_mode("dark")
@@ -66,7 +95,7 @@ def show_login_window(signup_window=None):
                         messagebox.showinfo("Login", f"Welcome, {result['name']}!")
                     else:
                         messagebox.showwarning("Login Failed", "Invalid email or password.")
-            except pymysql.MySQLError as e:
+            except  mysql.connector.Error as e:
                 messagebox.showerror("Database Error", f"An error occurred: {e}")
             finally:
                 connection.close()
@@ -147,9 +176,15 @@ def show_signup_window(login_window=None):
                     cursor.execute(query, (username, name, email, password, 'user'))
                     connection.commit()
                     messagebox.showinfo("Success", "Sign-Up successful!")
+<<<<<<< HEAD
+                    signup_window.destroy()
+                    show_login_window()
+            except mysql.connector.Error as e:
+=======
                     signup_window.withdraw()
                     show_login_window(signup_window)
             except pymysql.MySQLError as e:
+>>>>>>> 1bea7b4f06f9bd35e643544af29b205b47426ca1
                 messagebox.showerror("Database Error", f"An error occurred: {e}")
             finally:
                 connection.close()
