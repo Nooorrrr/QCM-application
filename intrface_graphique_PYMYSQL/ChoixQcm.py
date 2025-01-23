@@ -1,30 +1,16 @@
-import tkinter as tk
 import customtkinter as ctk
-import mysql.connector  # Remplace pymysql
-from mysql.connector import Error
+from conn import connect_to_database
+from qcmqst import QCMApp  # Importer la classe QCMApp depuis qcmqst.py
+from Historique import HistoriqueApp  # Importer la classe HistoriqueApp depuis Historique.py
 
-def connect_to_database():
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="pswd",#diro password ta3kom hna, bon genrallemnt faregh, mais bon
-            database="qcm_test"
-        )
-        return connection
-    except Error as e:
-        print(f"Erreur de connexion à la base de données : {e}")
-        return None
 
 def fetch_qcm_data():
     try:
         mydb = connect_to_database()
-        if not mydb:
-            raise Exception("La connexion à la base de données a échoué.")
-        
-        cursor = mydb.cursor(dictionary=True)  # Pour obtenir les résultats sous forme de dictionnaire
-        cursor.execute("SELECT nomqcm, categorie, name FROM qcm JOIN users ON qcm.idprof = users.user_id")
+        cursor = mydb.cursor()
+        cursor.execute("SELECT idqcm, nomqcm, categorie, name FROM qcm JOIN users ON qcm.idprof = users.user_id")
         qcm_data = cursor.fetchall()
+
         return qcm_data
     except Exception as e:
         print("Erreur lors de la récupération des données :", e)
@@ -34,100 +20,129 @@ def fetch_qcm_data():
             mydb.close()
 
 
-
 class QCMSInterface:
-    def __init__(self, root):
+    def __init__(self, root, user_id):
         self.root = root
+        self.user_id = user_id  # ID de l'utilisateur connecté
         self.root.title("QCMS")
-        self.root.configure(bg="#1a1a1a")
-
-        ctk.set_appearance_mode("dark")
+        ctk.set_appearance_mode("dark")  # Mode sombre
         ctk.set_default_color_theme("dark-blue")
 
+        # Frame principale
         self.main_frame = ctk.CTkFrame(self.root)
         self.main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Content area
-        content_area = ctk.CTkFrame(self.main_frame)
-        content_area.pack(fill="both", expand=True)
+        # Barre latérale
+        self.sidebar = ctk.CTkFrame(self.main_frame, width=200)
+        self.sidebar.pack(side="left", fill="y", padx=(0, 10), pady=10)
 
-        # Sidebar
-        self.sidebar = ctk.CTkFrame(content_area)
-        self.sidebar.pack(side="left", fill="y", padx=(0, 10))
-
-        self.menu_btn1 = ctk.CTkButton(self.sidebar, text="QCMS", width=150)
+        ctk.CTkLabel(self.sidebar, text="Menu", font=("Arial", 18, "bold"), anchor="center").pack(pady=20)
+        self.menu_btn1 = ctk.CTkButton(self.sidebar, text="QCMS", width=150, command=self.show_qcms)
         self.menu_btn1.pack(pady=5)
-
-        self.menu_btn2 = ctk.CTkButton(self.sidebar, text="My history", width=150)
+        self.menu_btn2 = ctk.CTkButton(self.sidebar, text="My history", width=150, command=self.show_history)
         self.menu_btn2.pack(pady=5)
 
-        # Table container
-        table_container = ctk.CTkFrame(content_area)
-        table_container.pack(side="left", fill="both", expand=True)
+        # Contenu principal
+        self.content_frame = ctk.CTkFrame(self.main_frame)
+        self.content_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
-        # Title above table
-        title_frame = ctk.CTkFrame(table_container)
-        title_frame.pack(pady=(20, 30))
-        table_title = ctk.CTkLabel(title_frame, text="Liste des QCM disponibles", font=("Arial", 18))
-        table_title.pack()
+        # Titre
+        ctk.CTkLabel(self.content_frame, text="Liste des QCM disponibles", font=("Arial", 18)).pack(pady=10)
 
-        # Table frame
-        self.content = ctk.CTkFrame(table_container)
-        self.content.pack(anchor="n")
+        # Table
+        self.table_frame = ctk.CTkFrame(self.content_frame)
+        self.table_frame.pack(fill="both", expand=True, pady=10, padx=10)
 
-        # Grid configuration
-        for i in range(4):
-            self.content.grid_columnconfigure(i, weight=1, minsize=150)
-
-        # Headers
-        headers = ["NOMQCM", "MODULE", "PROF", "Action"]
-        for i, header in enumerate(headers):
-            label = ctk.CTkLabel(self.content, text=header, text_color="gray")
-            label.grid(row=0, column=i, sticky="ew", padx=5, pady=5)
-
-        # Remplir le tableau avec les données de la base de données
+        # Grille de contenu
+        self.create_table_headers()
         self.populate_table()
 
-        # Footer
-        self.footer = ctk.CTkFrame(self.root)
-        self.footer.pack(fill="x", side="bottom")
+    def create_table_headers(self):
+        """Créer les en-têtes du tableau"""
+        headers = ["ID", "NOMQCM", "MODULE", "PROF", "ACTION"]  # Ajout de "ID"
+        for col, header in enumerate(headers):
+            header_label = ctk.CTkLabel(
+                self.table_frame, text=header, font=("Arial", 14, "bold"), text_color="white"
+            )
+            header_label.grid(row=0, column=col, padx=10, pady=5, sticky="ew")
 
-        self.name_entry = ctk.CTkEntry(self.footer, placeholder_text="Nom Prenom")
-        self.name_entry.pack(side="left", padx=10, pady=5)
+        # Configurer les colonnes pour s'étendre uniformément
+        for col in range(len(headers)):
+            self.table_frame.grid_columnconfigure(col, weight=1)
 
     def populate_table(self):
-        # Récupérer les données de la base de données
+        """Remplir le tableau avec des données récupérées depuis la base"""
         qcm_data = fetch_qcm_data()
 
-        # Effacer le contenu existant du tableau (sauf les en-têtes)
-        for widget in self.content.winfo_children():
-            if widget.grid_info()["row"] != 0:  # Ne pas supprimer les en-têtes
+        # Effacer les lignes précédentes (sauf les en-têtes)
+        for widget in self.table_frame.winfo_children():
+            if widget.grid_info()["row"] > 0:  # Ignore les en-têtes
                 widget.destroy()
 
-        # Remplir le tableau avec les données
+        # Ajouter des lignes au tableau
         for row, data in enumerate(qcm_data, start=1):
-            # Extraire les valeurs à partir du dictionnaire
+            idqcm = data['idqcm']  # Récupérer l'ID
             nomqcm = data['nomqcm']
             categorie = data['categorie']
             prof = data['name']
 
-            # Afficher les données dans les colonnes
-            label_nomqcm = ctk.CTkLabel(self.content, text=nomqcm, text_color="white")
-            label_nomqcm.grid(row=row, column=0, sticky="ew", padx=5, pady=2)
+            # Afficher l'ID dans la première colonne
+            ctk.CTkLabel(self.table_frame, text=idqcm, text_color="white").grid(
+                row=row, column=0, padx=10, pady=5, sticky="ew"
+            )
 
-            label_categorie = ctk.CTkLabel(self.content, text=categorie, text_color="white")
-            label_categorie.grid(row=row, column=1, sticky="ew", padx=5, pady=2)
-
-            label_prof = ctk.CTkLabel(self.content, text=prof, text_color="white")
-            label_prof.grid(row=row, column=2, sticky="ew", padx=5, pady=2)
+            # Colonnes de texte
+            ctk.CTkLabel(self.table_frame, text=nomqcm, text_color="white").grid(
+                row=row, column=1, padx=10, pady=5, sticky="ew"
+            )
+            ctk.CTkLabel(self.table_frame, text=categorie, text_color="white").grid(
+                row=row, column=2, padx=10, pady=5, sticky="ew"
+            )
+            ctk.CTkLabel(self.table_frame, text=prof, text_color="white").grid(
+                row=row, column=3, padx=10, pady=5, sticky="ew"
+            )
 
             # Bouton d'action
-            action_btn = ctk.CTkButton(self.content, text="Action", fg_color="#1E90FF",width=80, height=30)
-            action_btn.grid(row=row, column=3, padx=5, pady=2)
+            action_btn = ctk.CTkButton(
+                self.table_frame,
+                text="Answer",
+                fg_color="#1E90FF",
+                width=80,
+                height=30,
+                command=lambda qcm_id=idqcm: self.open_qcm_page(qcm_id)  # Lier le bouton à la nouvelle page
+            )
+            action_btn.grid(row=row, column=4, padx=10, pady=5)
+
+    def open_qcm_page(self, qcm_id):
+        """Ouvrir une nouvelle fenêtre pour afficher les questions du QCM"""
+        qcm_window = ctk.CTkToplevel(self.root)  # Créer une nouvelle fenêtre
+        qcm_window.geometry("800x600")  # Définir la taille
+        qcm_window.transient(self.root)  # Lier la fenêtre
+        qcm_window.grab_set()
+        QCMApp(qcm_window, qcm_id, self.user_id)  # Passer l'ID utilisateur à QCMApp
+
+    def show_qcms(self):
+        """Afficher la page des QCM"""
+        # Effacer le contenu actuel
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+        # Recharger la page des QCM
+        self.create_table_headers()
+        self.populate_table()
+
+    def show_history(self):
+        """Afficher la page d'historique"""
+        history_window = ctk.CTkToplevel(self.root)  # Créer une nouvelle fenêtre
+        history_window.geometry("1200x600")  # Définir la taille
+        history_window.transient(self.root)  # Lier la fenêtre
+        history_window.grab_set()
+        HistoriqueApp(history_window, self.user_id)  # Passer l'ID utilisateur à HistoriqueApp
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.geometry("800x600")
-    app = QCMSInterface(root)
+    root = ctk.CTk()
+    root.geometry("900x600")
+    user_id = 1  # Remplacez cette valeur par l'ID de l'utilisateur réel
+    app = QCMSInterface(root, user_id)  # Passer l'ID utilisateur
     root.mainloop()
