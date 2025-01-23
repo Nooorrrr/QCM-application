@@ -56,12 +56,4 @@ Une application de création et de gestion de QCM (Questionnaire à Choix Multip
 
 
 
-   QCM-application/
-├── src/                  # Code source de l'application
-│   ├── admin.py          # Interface professeur
-│   ├── user.py           # Interface étudiant
-│   ├── database.py       # Gestion de la base de données
-│   └── config.py         # Configuration de la base de données
-├── requirements.txt      # Dépendances Python
-├── database.sql          # Script SQL pour la base de données
-└── README.md             # Ce fichier
+
