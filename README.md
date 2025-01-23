@@ -26,8 +26,26 @@ Une application de création et de gestion de QCM (Questionnaire à Choix Multip
 
 ---
 
-## Comment l'utiliser
+---
 
+## Liens utiles
+
+- **Prototype Figma** : [Lien vers le prototype Figma]([https://www.figma.com/your-prototype-link](https://www.figma.com/design/dwzwWOrA3yCBxn8TW9TO4J/Untitled?node-id=0-1&t=62rFdj8bt2EggBCu-1))  
+  Consultez la conception de l'interface utilisateur sur Figma.
+
+- **Vidéo de démonstration** : [Lien vers la vidéo YouTube](https://www.youtube.com/your-video-link)  
+  Regardez une démonstration de l'application en action.
+
+---
+
+## Comment l'utiliser
+### Prérequis
+
+1. **Python 3.12** : Installé sur votre machine.
+2. **MySQL** : Une base de données MySQL doit être configurée.
+3. **Bibliothèques Python** : Installez les dépendances nécessaires.
+
+   
 ### Installation
 
 1. Clonez ce dépôt :
@@ -35,3 +53,15 @@ Une application de création et de gestion de QCM (Questionnaire à Choix Multip
    ```bash
    git clone https://github.com/Nooorrrr/QCM-application.git
    cd QCM-application
+
+
+
+   QCM-application/
+├── src/                  # Code source de l'application
+│   ├── admin.py          # Interface professeur
+│   ├── user.py           # Interface étudiant
+│   ├── database.py       # Gestion de la base de données
+│   └── config.py         # Configuration de la base de données
+├── requirements.txt      # Dépendances Python
+├── database.sql          # Script SQL pour la base de données
+└── README.md             # Ce fichier
