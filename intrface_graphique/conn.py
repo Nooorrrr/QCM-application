@@ -1,17 +1,18 @@
-import pymysql
-from pymysql.cursors import DictCursor
+import tkinter as tk
+import customtkinter as ctk
+import mysql.connector  # Remplace pymysql
+from mysql.connector import Error
 from tkinter import messagebox
 
 def connect_to_database():
     try:
-        connection = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='',
-            database='qcm_py',
-            cursorclass=DictCursor
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="pswd",#diro password ta3kom hna, bon genrallemnt faregh, mais bon
+            database="qcm_test"
         )
         return connection
-    except pymysql.MySQLError as e:
-        messagebox.showerror("Database Error", f"Failed to connect to database: {e}")
+    except Error as e:
+        print(f"Erreur de connexion à la base de données : {e}")
         return None

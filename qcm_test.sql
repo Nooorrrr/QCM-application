@@ -17,7 +17,8 @@ CREATE TABLE answer (
 CREATE TABLE qcm (
     idqcm INT AUTO_INCREMENT PRIMARY KEY,
     nomqcm VARCHAR(100) NOT NULL,
-    categorie ENUM('Math', 'Science', 'History') NOT NULL,
+    categorie ENUM('THI', 'BI', 'COMPILE', 'AP', 'GL', 'RO', 'CRYPTO', 'WEB') NOT NULL,
+
     idprof INT NOT NULL,
     FOREIGN KEY (idprof) REFERENCES users(user_id)
 );

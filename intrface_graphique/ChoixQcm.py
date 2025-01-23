@@ -1,15 +1,30 @@
 import tkinter as tk
 import customtkinter as ctk
-import pymysql
-from conn import connect_to_database
+import mysql.connector  # Remplace pymysql
+from mysql.connector import Error
+
+def connect_to_database():
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="pswd",#diro password ta3kom hna, bon genrallemnt faregh, mais bon
+            database="qcm_test"
+        )
+        return connection
+    except Error as e:
+        print(f"Erreur de connexion à la base de données : {e}")
+        return None
 
 def fetch_qcm_data():
     try:
         mydb = connect_to_database()
-        cursor = mydb.cursor()
+        if not mydb:
+            raise Exception("La connexion à la base de données a échoué.")
+        
+        cursor = mydb.cursor(dictionary=True)  # Pour obtenir les résultats sous forme de dictionnaire
         cursor.execute("SELECT nomqcm, categorie, name FROM qcm JOIN users ON qcm.idprof = users.user_id")
         qcm_data = cursor.fetchall()
-
         return qcm_data
     except Exception as e:
         print("Erreur lors de la récupération des données :", e)
@@ -17,6 +32,7 @@ def fetch_qcm_data():
     finally:
         if 'mydb' in locals() and mydb:
             mydb.close()
+
 
 
 class QCMSInterface:
